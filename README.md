@@ -1,8 +1,10 @@
 # Influence Functions for PyTorch
 
-This is a PyTorch reimplementation of Influence Functions from the ICML2017 best paper:
+This repository is a fork of Nissar B's PyTorch reimplementation of Influence Functions from the ICML2017 best paper:
 [Understanding Black-box Predictions via Influence Functions](https://arxiv.org/abs/1703.04730) by Pang Wei Koh and Percy Liang.
-The reference implementation can be found here: [link](https://github.com/kohpangwei/influence-release).
+The reference implementation can be found here: [link](https://github.com/kohpangwei/influence-release), and the original upstream source can be found here: [link](https://github.com/nimarb/pytorch_influence_functions). 
+
+This fork is maintained by PRAISE lab, with additional bugfixes and changes.
 
 - [Why Use Influence Functions?](#why-use-influence-functions)
 - [Requirements](#requirements)
