@@ -29,7 +29,7 @@ def calc_s_test(
     Arguments:
         model: pytorch model, for which s_test should be calculated
         test_loader: pytorch dataloader, which can load the test data
-        train_loader: pytorch dataloader, which torch.nn.Modulecan load the train data
+        train_loader: pytorch dataloader, which torch.nn.Module can load the train data
         save: Path, path where to save the s_test files if desired. Omitting
             this argument will skip saving
         gpu: int, device id to use for GPU, -1 for CPU (default)
@@ -77,8 +77,17 @@ def calc_s_test(
     return s_tests, save
 
 
-def calc_s_test_single(model, z_test, t_test, train_loader, gpu=-1,
-                       damp=0.01, scale=25, recursion_depth=5000, r=1):
+def calc_s_test_single(
+        model: torch.nn.Module,
+        z_test,
+        t_test,
+        train_loader: torch.utils.data.dataloader.DataLoader,
+        gpu: int=-1,
+        damp: float=0.01,
+        scale: float=25,
+        recursion_depth:int =5000,
+        r:int =1,
+    ) -> list:
     """Calculates s_test for a single test image taking into account the whole
     training dataset. s_test = invHessian * nabla(Loss(test_img, model params))
 
@@ -99,7 +108,7 @@ def calc_s_test_single(model, z_test, t_test, train_loader, gpu=-1,
 
     Returns:
         s_test_vec: torch tensor, contains s_test for a single test image"""
-    s_test_vec_list = []
+    s_test_vec_list: list = []
     for i in range(r):
         s_test_vec_list.append(s_test(z_test, t_test, model, train_loader,
                                       gpu=gpu, damp=damp, scale=scale,
@@ -114,12 +123,18 @@ def calc_s_test_single(model, z_test, t_test, train_loader, gpu=-1,
     for i in range(1, r):
         s_test_vec += s_test_vec_list[i]
 
-    s_test_vec = [i / r for i in s_test_vec]
+    s_test_vec: list = [i / r for i in s_test_vec]
 
     return s_test_vec
 
 
-def calc_grad_z(model, train_loader, save_pth=False, gpu=-1, start=0):
+def calc_grad_z(
+        model: torch.nn.Module,
+        train_loader: torch.utils.data.dataloader.DataLoader,
+        save_pth: Path | None=None,
+        gpu: int=-1,
+        start:int =0
+    ) -> tuple[list, Path | None]:
     """Calculates grad_z and can save the output to files. One grad_z should
     be computed for each training data sample.
 
@@ -140,8 +155,9 @@ def calc_grad_z(model, train_loader, save_pth=False, gpu=-1, start=0):
     if not save_pth:
         logging.info("ATTENTION: Not saving grad_z files!")
 
-    grad_zs = []
-    for i in range(start, len(train_loader.dataset)):
+    grad_zs: list = []
+
+    for i in range(start, len(train_loader.dataset)): # type: ignore
         z, t = train_loader.dataset[i]
         z = train_loader.collate_fn([z])
         t = train_loader.collate_fn([t])
@@ -152,13 +168,17 @@ def calc_grad_z(model, train_loader, save_pth=False, gpu=-1, start=0):
         else:
             grad_zs.append(grad_z_vec)
         display_progress(
-            "Calc. grad_z: ", i-start, len(train_loader.dataset)-start)
+            "Calc. grad_z: ", i-start, len(train_loader.dataset)-start) # type: ignore
 
     return grad_zs, save_pth
 
 
-def load_s_test(s_test_dir=Path("./s_test/"), s_test_id=0, r_sample_size=10,
-                train_dataset_size=-1):
+def load_s_test(
+        s_test_dir: Path=Path("./s_test/"),
+        s_test_id: int=0,
+        r_sample_size: int=10,
+        train_dataset_size: int=-1
+    ) -> tuple[list, list]:
     """Loads all s_test data required to calculate the influence function
     and returns a list of it.
 
@@ -181,7 +201,7 @@ def load_s_test(s_test_dir=Path("./s_test/"), s_test_id=0, r_sample_size=10,
 
     s_test = []
     logging.info(f"Loading s_test from: {s_test_dir} ...")
-    num_s_test_files = len(s_test_dir.glob("*.s_test"))
+    num_s_test_files = len(s_test_dir.glob("*.s_test")) # type: ignore
     if num_s_test_files != r_sample_size:
         logging.warn("Load Influence Data: number of s_test sample files"
                      " mismatches the available samples")
@@ -211,7 +231,10 @@ def load_s_test(s_test_dir=Path("./s_test/"), s_test_id=0, r_sample_size=10,
     return e_s_test, s_test
 
 
-def load_grad_z(grad_z_dir=Path("./grad_z/"), train_dataset_size=-1):
+def load_grad_z(
+        grad_z_dir: Path=Path("./grad_z/"),
+        train_dataset_size: int=-1
+    ) -> list:
     """Loads all grad_z data required to calculate the influence function and
     returns it.
 
@@ -240,8 +263,11 @@ def load_grad_z(grad_z_dir=Path("./grad_z/"), train_dataset_size=-1):
     return grad_z_vecs
 
 
-def calc_influence_function(train_dataset_size, grad_z_vecs=None,
-                            e_s_test=None):
+def calc_influence_function(
+        train_dataset_size: int,
+        grad_z_vecs: list | None =None,
+        e_s_test: list | None =None
+    ) -> tuple[list[float], list[float], list[float]]:
     """Calculates the influence function
 
     Arguments:
@@ -259,12 +285,13 @@ def calc_influence_function(train_dataset_size, grad_z_vecs=None,
         grad_z_vecs = load_grad_z()
         e_s_test, _ = load_s_test(train_dataset_size=train_dataset_size)
 
-    if (len(grad_z_vecs) != train_dataset_size):
+    if (len(grad_z_vecs) != train_dataset_size): # type: ignore
         logging.warn("Training data size and the number of grad_z files are"
                      " inconsistent.")
-        train_dataset_size = len(grad_z_vecs)
+        train_dataset_size = len(grad_z_vecs) #type: ignore
 
-    influences = []
+    influences: list[float] = []
+
     for i in range(train_dataset_size):
         tmp_influence = -sum(
             [
@@ -289,9 +316,17 @@ def calc_influence_function(train_dataset_size, grad_z_vecs=None,
     return influences, harmful.tolist(), helpful.tolist()
 
 
-def calc_influence_single(model, train_loader, test_loader, test_id_num, gpu,
-                          recursion_depth, r, s_test_vec=None,
-                          time_logging=False):
+def calc_influence_single(
+        model: torch.nn.Module,
+        train_loader: torch.utils.data.dataloader.DataLoader,
+        test_loader: torch.utils.data.dataloader.DataLoader,
+        test_id_num: int,
+        gpu:int,
+        recursion_depth:int,
+        r:int,
+        s_test_vec: list[torch.Tensor] | None=None,
+        time_logging:bool=False
+    ) -> tuple[list[float], list[float], list[float], int]:
     """Calculates the influences of all training data points on a single
     test dataset image.
 
@@ -328,8 +363,8 @@ def calc_influence_single(model, train_loader, test_loader, test_id_num, gpu,
                                         r=r)
 
     # Calculate the influence function
-    train_dataset_size = len(train_loader.dataset)
-    influences = []
+    train_dataset_size = len(train_loader.dataset) # type: ignore
+    influences: list[float] = []
     for i in range(train_dataset_size):
         z, t = train_loader.dataset[i]
         z = train_loader.collate_fn([z])
