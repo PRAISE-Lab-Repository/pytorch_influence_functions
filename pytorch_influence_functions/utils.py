@@ -4,10 +4,17 @@ import logging
 from pathlib import Path
 from datetime import datetime as dt
 
+from typing import Any
 
-def save_json(json_obj, json_path, append_if_exists=False,
-              overwrite_if_exists=False, unique_fn_if_exists=True):
-    """Saves a json file
+def save_json(
+        json_obj: object,
+        json_path: Path,
+        append_if_exists: bool = False,
+        overwrite_if_exists: bool = False,
+        unique_fn_if_exists: bool = True
+    ) -> None :
+    """
+    Saves a json file
 
     Arguments:
         json_obj: json, json object
@@ -55,8 +62,13 @@ def save_json(json_obj, json_path, append_if_exists=False,
         json.dump(json_obj, fout, indent=2)
 
 
-def display_progress(text, current_step, last_step, enabled=True,
-                     fix_zero_start=True):
+def display_progress(
+        text: str,
+        current_step: int,
+        last_step: int,
+        enabled: bool = True,
+        fix_zero_start: bool = True
+    ) -> None:
     """Draws a progress indicator on the screen with the text preceeding the
     progress
 
@@ -101,7 +113,7 @@ def display_progress(text, current_step, last_step, enabled=True,
     sys.stdout.flush()
 
 
-def init_logging(filename=None):
+def init_logging(filename: str | None = None) -> None:
     """Initialises log/stdout output
 
     Arguments:
@@ -119,7 +131,7 @@ def init_logging(filename=None):
                             format=log_format)
 
 
-def get_default_config():
+def get_default_config() -> dict[str, Any]:
     """Returns a default config file"""
     config = {
         'outdir': 'outdir',

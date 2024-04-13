@@ -5,8 +5,16 @@ from torch.autograd import grad
 from pytorch_influence_functions.utils import display_progress
 
 
-def s_test(z_test, t_test, model, z_loader, gpu=-1, damp=0.01, scale=25.0,
-           recursion_depth=5000):
+def s_test(
+        z_test: torch.Tensor,
+        t_test: torch.Tensor,
+        model: torch.nn.Module,
+        z_loader: torch.utils.data.dataloader.DataLoader,
+        gpu: int = -1,
+        damp: float = 0.01,
+        scale: float = 25.0,
+        recursion_depth: int = 5000
+    ) -> list[torch.Tensor]:
     """s_test can be precomputed for each test point of interest, and then
     multiplied with grad_z to get the desired value for each training point.
     Here, strochastic estimation is used to calculate s_test. s_test is the
@@ -25,8 +33,9 @@ def s_test(z_test, t_test, model, z_loader, gpu=-1, damp=0.01, scale=25.0,
 
     Returns:
         h_estimate: list of torch tensors, s_test"""
-    v = grad_z(z_test, t_test, model, gpu)
-    h_estimate = v.copy()
+    
+    v: list[torch.Tensor] = grad_z(z_test, t_test, model, gpu)
+    h_estimate: list[torch.Tensor] = v.copy()
 
     ################################
     # TODO: Dynamically set the recursion depth so that iterations stops
@@ -38,12 +47,14 @@ def s_test(z_test, t_test, model, z_loader, gpu=-1, damp=0.01, scale=25.0,
         #########################
         # TODO: do x, t really have to be chosen RANDOMLY from the train set?
         #########################
+        x: torch.Tensor
+        t: torch.Tensor
         for x, t in z_loader:
             if gpu >= 0:
                 x, t = x.cuda(), t.cuda()
-            y = model(x)
-            loss = calc_loss(y, t)
-            params = [ p for p in model.parameters() if p.requires_grad ]
+            y: torch.Tensor = model(x)
+            loss: torch.Tensor = calc_loss(y, t)
+            params: list[torch.Tensor] = [ p for p in model.parameters() if p.requires_grad ]
             hv = hvp(loss, params, h_estimate)
             # Recursively caclulate h_estimate
             h_estimate = [
@@ -54,7 +65,7 @@ def s_test(z_test, t_test, model, z_loader, gpu=-1, damp=0.01, scale=25.0,
     return h_estimate
 
 
-def calc_loss(y, t):
+def calc_loss(y: torch.Tensor, t: torch.Tensor) -> torch.Tensor:
     """Calculates the loss
 
     Arguments:
@@ -67,13 +78,18 @@ def calc_loss(y, t):
     # if dim == [0, 1, 3] then dim=0; else dim=1
     ####################
     # y = torch.nn.functional.log_softmax(y, dim=0)
-    y = torch.nn.functional.log_softmax(y)
+    y: torch.Tensor = torch.nn.functional.log_softmax(y)
     loss = torch.nn.functional.nll_loss(
         y, t, weight=None, reduction='mean')
     return loss
 
 
-def grad_z(z, t, model, gpu=-1):
+def grad_z(
+        z: torch.Tensor,
+        t: torch.Tensor,
+        model: torch.nn.Module,
+        gpu: int = -1
+    ) -> list[torch.Tensor]:
     """Calculates the gradient z. One grad_z should be computed for each
     training sample.
 
@@ -97,8 +113,7 @@ def grad_z(z, t, model, gpu=-1):
     params = [ p for p in model.parameters() if p.requires_grad ]
     return list(grad(loss, params, create_graph=True))
 
-
-def hvp(y, w, v):
+def hvp(y: torch.Tensor, w: list[torch.Tensor], v: list[torch.Tensor]) -> list[torch.Tensor]:
     """Multiply the Hessians of y and w by v.
     Uses a backprop-like approach to compute the product between the Hessian
     and another vector efficiently, which even works for large Hessians.
