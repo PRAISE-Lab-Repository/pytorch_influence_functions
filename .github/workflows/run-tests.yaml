@@ -3,7 +3,7 @@ name: Static analysis and unit tests
 run-name: Running static analysis and unit tests
 on:
   push:
-    branches: main
+    branches: master
     paths-ignore: 
       - '**.md'
       - '.gitignore'
