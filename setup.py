@@ -7,7 +7,7 @@ with open(this_dir / 'README.md', "r", encoding='utf-8') as fh:
 
 setuptools.setup(
     name="pytorch_influence_functions",
-    version="0.1.2",
+    version="0.1.3",
     author="Nimar Blume",
     author_email="l.nimar.b@gmail.com",
     description="This package is a plug-n-play PyTorch reimplementation of Influence Functions. Influence Functions were introduced in the paper Understanding Black-box Predictions via Influence Functions by Pang Wei Koh and Percy Liang (ICML2017).",
@@ -32,5 +32,6 @@ setuptools.setup(
     install_requires=[
           'torch>=1.0',
           'numpy>=1.13.0'
-    ]
+    ],
+    test_suite="tests",
 )

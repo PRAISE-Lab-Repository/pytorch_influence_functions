@@ -6,25 +6,6 @@ The reference implementation can be found here: [link](https://github.com/kohpan
 
 This fork is maintained by PRAISE lab, with additional bugfixes and changes.
 
-- [Why Use Influence Functions?](#why-use-influence-functions)
-- [Requirements](#requirements)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Background and Documentation](#background-and-documentation)
-  - [config](#config)
-    - [Misc parameters](#misc-parameters)
-    - [Calculation parameters](#calculation-parameters)
-      - [s_test](#stest)
-  - [Modes of computation](#modes-of-computation)
-  - [Output variables](#output-variables)
-    - [Influences](#influences)
-    - [Harmful](#harmful)
-    - [Helpful](#helpful)
-- [Roadmap](#roadmap)
-  - [v0.2](#v02)
-  - [v0.3](#v03)
-  - [v0.4](#v04)
-
 ## Why Use Influence Functions?
 
 Influence functions help you to debug the results of your deep learning model
@@ -45,24 +26,56 @@ as long as you have a supervised learning problem.
 * PyTorch 1.0 or later
 * NumPy 1.12 or later
 
-To run the tests, further requirements are:
+To run the examples, further requirements are:
 
 * torchvision 0.3 or later
 * PIL
 
 ## Installation
 
-You can either install this package directly through pip:
+This Python module is currently only available via source code from this repository. Hence in order to use this module, you must install it from the repository source. To do so, first clone the git repository:
 
 ```bash
-pip3 install --user pytorch-influence-functions
+git clone https://github.com/PRAISE-Lab-Repository/pytorch_influence_functions.git
+cd pytorch_influence_functions
 ```
 
-Or you can clone the repo and 
+And then use setuptools to install the package so that it is available within your system:
 
-* import it as a package after it's in your `PATH`.
-* install it using `python setup.py install`
-* install it using `python setup.py develop` (if you want to edit the code)
+```bash
+python setup.py install
+```
+
+You may now use this module in your Python code or Jupyter notebooks by importing it via:
+
+```python
+import python_influence_functions as ptif
+```
+
+## Development
+
+This Python library uses [mypy](https://www.mypy-lang.org/) for static type analysis, `unittest` for unit testing, setuptools for package building, as well as Github Actions to perform all three tasks automatically as a part of a CI/CD pipeline.
+
+### Static Type Analysis
+In order to perform static type analysis with mypy, ensure that the mypy module is installed (use `pip install mypy` if unsure), and run the following command from the repository root:
+
+```bash
+mypy pytorch_influence_functions
+```
+
+### Running Unit Tests
+In order to run unit tests with `unittest`, run the following command from the repository root:
+
+```bash
+python -m unittest -v
+```
+
+### Building for Development
+When developing this module, call `setup.py` with the `develop` directive in order to perform a live installation that allows code to be "refreshed" upon saving. This prevents the need to run `python setup.py install` after every change in the module's code.
+
+```bash
+python setup.py develop
+```
 
 ## Usage
 
@@ -268,6 +281,6 @@ prediction outcome of the processed test samples.
 
 ### v0.4
 
-* [ ] integrate myPy type annotations (static type checking)
+* [x] integrate myPy type annotations (static type checking)
 * [ ] Use multiprocessing to calc the influence
 * [ ] use `r"doc"` docstrings like pytorch

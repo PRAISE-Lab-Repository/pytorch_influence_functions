@@ -1,4 +1,4 @@
-#! /usr/bin/env python3
+#!/usr/bin/env python3
 
 import torch
 from torch.autograd import grad
@@ -17,7 +17,7 @@ def s_test(
     ) -> list[torch.Tensor]:
     """s_test can be precomputed for each test point of interest, and then
     multiplied with grad_z to get the desired value for each training point.
-    Here, strochastic estimation is used to calculate s_test. s_test is the
+    Here, stochastic estimation is used to calculate s_test. s_test is the
     Inverse Hessian Vector Product.
 
     Arguments:
