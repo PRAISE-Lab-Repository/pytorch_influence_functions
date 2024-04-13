@@ -11,16 +11,25 @@ from pathlib import Path
 from pytorch_influence_functions.influence_function import s_test, grad_z
 from pytorch_influence_functions.utils import save_json, display_progress
 
-
-def calc_s_test(model, test_loader, train_loader, save=False, gpu=-1,
-                damp=0.01, scale=25, recursion_depth=5000, r=1, start=0):
+def calc_s_test(
+        model: torch.nn.Module,
+        test_loader: torch.utils.data.dataloader.DataLoader,
+        train_loader: torch.utils.data.dataloader.DataLoader,
+        save: Path | None=None,
+        gpu: int=-1,
+        damp: float=0.01,
+        scale: float=25,
+        recursion_depth:int =5000,
+        r:int =1,
+        start:int =0
+    ) -> tuple:
     """Calculates s_test for the whole test dataset taking into account all
     training data images.
 
     Arguments:
         model: pytorch model, for which s_test should be calculated
         test_loader: pytorch dataloader, which can load the test data
-        train_loader: pytorch dataloader, which can load the train data
+        train_loader: pytorch dataloader, which torch.nn.Modulecan load the train data
         save: Path, path where to save the s_test files if desired. Omitting
             this argument will skip saving
         gpu: int, device id to use for GPU, -1 for CPU (default)
@@ -39,13 +48,15 @@ def calc_s_test(model, test_loader, train_loader, save=False, gpu=-1,
             dataset. Can be huge.
         save: Path, path to the folder where the s_test files were saved to or
             False if they were not saved."""
+    
+    # TODO: Disentangle the savepath and save options
     if save and not isinstance(save, Path):
         save = Path(save)
     if not save:
         logging.info("ATTENTION: not saving s_test files.")
 
-    s_tests = []
-    for i in range(start, len(test_loader.dataset)):
+    s_tests: list = []
+    for i in range(start, len(test_loader.dataset)): # type: ignore
         z_test, t_test = test_loader.dataset[i]
         z_test = test_loader.collate_fn([z_test])
         t_test = test_loader.collate_fn([t_test])
@@ -61,7 +72,7 @@ def calc_s_test(model, test_loader, train_loader, save=False, gpu=-1,
         else:
             s_tests.append(s_test_vec)
         display_progress(
-            "Calc. z_test (s_test): ", i-start, len(test_loader.dataset)-start)
+            "Calc. z_test (s_test): ", i-start, len(test_loader.dataset)-start) # type: ignore
 
     return s_tests, save
 
@@ -479,7 +490,7 @@ def calc_img_wise(config, model, train_loader, test_loader):
 
         # Sometimes when using numeric labels, the dtype will be a Tensor. This prevents
         # json serialization unless we use torch.Tensor.item() to return a standard Python dtype.
-        if isinstance(label, torch.Tensor)
+        if isinstance(label, torch.Tensor):
             influences[str(i)]['label'] = label.item()
         else:
             influences[str(i)]['label'] = label
