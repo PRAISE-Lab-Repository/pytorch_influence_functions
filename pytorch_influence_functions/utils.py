@@ -20,11 +20,6 @@ def save_json(json_obj, json_path, append_if_exists=False,
         unique_fn_if_exsists: bool, appends the current date and time to the
             file name if the target file exists already.
     """
-    
-    # We temporary override this function as a no-op, since the 
-    # pytorch-influence-functions does not correctly implement json serialization
-    # semantics for their influences dictionary.
-    return True
 
     if isinstance(json_path, str):
         json_path = Path(json_path)

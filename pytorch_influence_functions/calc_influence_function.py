@@ -476,7 +476,14 @@ def calc_img_wise(config, model, train_loader, test_loader):
         ###########
         influences[str(i)] = {}
         _, label = test_loader.dataset[i]
-        influences[str(i)]['label'] = label
+
+        # Sometimes when using numeric labels, the dtype will be a Tensor. This prevents
+        # json serialization unless we use torch.Tensor.item() to return a standard Python dtype.
+        if isinstance(label, torch.Tensor)
+            influences[str(i)]['label'] = label.item()
+        else:
+            influences[str(i)]['label'] = label
+
         influences[str(i)]['num_in_dataset'] = j
         influences[str(i)]['time_calc_influence_s'] = end_time - start_time
         infl = [x.cpu().numpy().tolist() for x in influence]
