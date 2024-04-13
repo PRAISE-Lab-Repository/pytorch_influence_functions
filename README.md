@@ -56,6 +56,20 @@ import python_influence_functions as ptif
 
 This Python library uses [mypy](https://www.mypy-lang.org/) for static type analysis, `unittest` for unit testing, setuptools for package building, as well as Github Actions to perform all three tasks automatically as a part of a CI/CD pipeline.
 
+### Python Virtual Environment
+In order to maintain the same toolchain and simplify dependency management, please develop this package within a Python virtual environment. Create and activate the environment using:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+```
+
+Next install the package dependencies using `pip` and the provided `requirements.txt`:
+
+```bash
+pip install -r requirements.txt
+```
+
 ### Static Type Analysis
 In order to perform static type analysis with mypy, ensure that the mypy module is installed (use `pip install mypy` if unsure), and run the following command from the repository root:
 
