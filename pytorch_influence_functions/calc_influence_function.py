@@ -11,6 +11,8 @@ from pathlib import Path
 from pytorch_influence_functions.influence_function import s_test, grad_z
 from pytorch_influence_functions.utils import save_json, display_progress
 
+from typing import Any
+
 def calc_s_test(
         model: torch.nn.Module,
         test_loader: torch.utils.data.dataloader.DataLoader,
@@ -326,7 +328,7 @@ def calc_influence_single(
         r:int,
         s_test_vec: list[torch.Tensor] | None=None,
         time_logging:bool=False
-    ) -> tuple[list[float], list[float], list[float], int]:
+    ) -> tuple[list[torch.Tensor], list[float], list[float], int]:
     """Calculates the influences of all training data points on a single
     test dataset image.
 
@@ -364,7 +366,7 @@ def calc_influence_single(
 
     # Calculate the influence function
     train_dataset_size = len(train_loader.dataset) # type: ignore
-    influences: list[float] = []
+    influences: list[torch.Tensor] = []
     for i in range(train_dataset_size):
         z, t = train_loader.dataset[i]
         z = train_loader.collate_fn([z])
@@ -395,8 +397,12 @@ def calc_influence_single(
     return influences, harmful.tolist(), helpful.tolist(), test_id_num
 
 
-def get_dataset_sample_ids_per_class(class_id, num_samples, test_loader,
-                                     start_index=0):
+def get_dataset_sample_ids_per_class(
+        class_id: int,
+        num_samples: int,
+        test_loader: torch.utils.data.dataloader.DataLoader,
+        start_index: int=0
+    ) -> list[int]:
     """Gets the first num_samples from class class_id starting from
     start_index. Returns a list with the indicies which can be passed to
     test_loader.dataset[X] to retreive the actual data.
@@ -416,9 +422,9 @@ def get_dataset_sample_ids_per_class(class_id, num_samples, test_loader,
     # for the x+1th sample and when that's found we cancel the loop. we could
     # stop after finding the x'th picture (start_index + num_samples)
     #######
-    sample_list = []
-    img_count = 0
-    for i in range(len(test_loader.dataset)):
+    sample_list: list[int] = []
+    img_count: int = 0
+    for i in range(len(test_loader.dataset)): # type: ignore
         _, t = test_loader.dataset[i]
         if class_id == t:
             img_count += 1
@@ -431,8 +437,12 @@ def get_dataset_sample_ids_per_class(class_id, num_samples, test_loader,
     return sample_list
 
 
-def get_dataset_sample_ids(num_samples, test_loader, num_classes=None,
-                           start_index=0):
+def get_dataset_sample_ids(
+        num_samples: int,
+        test_loader: torch.utils.data.dataloader.DataLoader,
+        num_classes: int | None = None,
+        start_index: int=0
+    ) -> tuple[dict, list]:
     """Gets the first num_sample indices of all classes starting from
     start_index per class. Returns a list and a dict containing the indicies.
 
@@ -447,11 +457,11 @@ def get_dataset_sample_ids(num_samples, test_loader, num_classes=None,
     Returns:
         sample_dict: dict, containing dict[class] = list_of_indices
         sample_list: list, containing a continious list of indices"""
-    sample_dict = {}
-    sample_list = []
+    sample_dict: dict = {}
+    sample_list: list = []
     if not num_classes:
-        num_classes = len(np.unique(test_loader.dataset.targets))
-    if start_index > len(test_loader.dataset) / num_classes:
+        num_classes = len(np.unique(test_loader.dataset.targets)) # type: ignore
+    if start_index > len(test_loader.dataset) / num_classes: # type: ignore
         logging.warn(f"The variable test_start_index={start_index} is "
                      f"larger than the number of available samples per class.")
     for i in range(num_classes):
@@ -463,16 +473,23 @@ def get_dataset_sample_ids(num_samples, test_loader, num_classes=None,
     return sample_dict, sample_list
 
 
-def calc_img_wise(config, model, train_loader, test_loader):
+def calc_img_wise(
+        config: dict[str, Any],
+        model: torch.nn.Module,
+        train_loader: torch.utils.data.dataloader.DataLoader, 
+        test_loader: torch.utils.data.dataloader.DataLoader
+    ) -> dict[str, Any]:
     """Calculates the influence function one test point at a time. Calcualtes
     the `s_test` and `grad_z` values on the fly and discards them afterwards.
 
     Arguments:
         config: dict, contains the configuration from cli params"""
-    influences_meta = copy.deepcopy(config)
-    test_sample_num = config['test_sample_num']
-    test_start_index = config['test_start_index']
-    outdir = Path(config['outdir'])
+    
+    influences_meta: dict[str, Any] = copy.deepcopy(config)
+
+    test_sample_num: int = config['test_sample_num']
+    test_start_index: int = config['test_start_index']
+    outdir: Path = Path(config['outdir'])
     outdir.mkdir(exist_ok=True, parents=True)
 
     # If calculating the influence for a subset of the whole dataset,
@@ -485,7 +502,7 @@ def calc_img_wise(config, model, train_loader, test_loader):
                                                 config['num_classes'],
                                                 test_start_index)
     else:
-        test_dataset_iter_len = len(test_loader.dataset)
+        test_dataset_iter_len = len(test_loader.dataset) # type: ignore
 
     # Set up logging and save the metadata conf file
     logging.info(f"Running on: {test_sample_num} images per class.")
@@ -496,7 +513,7 @@ def calc_img_wise(config, model, train_loader, test_loader):
     influences_meta_path = outdir.joinpath(influences_meta_fn)
     save_json(influences_meta, influences_meta_path)
 
-    influences = {}
+    influences: dict[str, Any] = {}
     # Main loop for calculating the influence function one test sample per
     # iteration.
     for j in range(test_dataset_iter_len):
@@ -559,7 +576,12 @@ def calc_img_wise(config, model, train_loader, test_loader):
     return influences
 
 
-def calc_all_grad_then_test(config, model, train_loader, test_loader):
+def calc_all_grad_then_test(
+        config: dict[str, Any],
+        model: torch.nn.Module,
+        train_loader: torch.utils.data.dataloader.DataLoader,
+        test_loader: torch.utils.data.dataloader.DataLoader
+    ) -> None:
     """Calculates the influence function by first calculating
     all grad_z, all s_test and then loading them to calc the influence"""
 
@@ -582,11 +604,12 @@ def calc_all_grad_then_test(config, model, train_loader, test_loader):
     calc_grad_z(model, train_loader, grad_z_outdir, config['gpu'],
                 config['test_start_index'])
 
-    train_dataset_len = len(train_loader.dataset)
+    train_dataset_len = len(train_loader.dataset) # type: ignore
     influences, harmful, helpful = calc_influence_function(train_dataset_len)
 
     influence_results['influences'] = influences
     influence_results['harmful'] = harmful
     influence_results['helpful'] = helpful
     influences_path = outdir.joinpath("influence_results.json")
+
     save_json(influence_results, influences_path)
