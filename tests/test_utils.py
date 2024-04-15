@@ -1,8 +1,8 @@
-#!/usr/bin/env python3
-
 import unittest
-import pytorch_influence_functions as ptif
 from typing import Any
+
+import pytorch_influence_functions as ptif
+
 
 class TestSaveJson(unittest.TestCase):
     def test_placeholder(self) -> None:

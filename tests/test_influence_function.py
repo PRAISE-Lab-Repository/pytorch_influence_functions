@@ -1,7 +1,7 @@
-#!/usr/bin/env python3
-
 import unittest
+
 import pytorch_influence_functions as ptif
+
 
 class TestFunction_stest(unittest.TestCase):
     def test_placeholder(self) -> None:

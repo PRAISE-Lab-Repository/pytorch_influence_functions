@@ -1,11 +1,8 @@
-#!/usr/bin/env python3
-
-import sys
 import json
 import logging
-from pathlib import Path
+import sys
 from datetime import datetime as dt
-
+from pathlib import Path
 from typing import Any
 
 def save_json(

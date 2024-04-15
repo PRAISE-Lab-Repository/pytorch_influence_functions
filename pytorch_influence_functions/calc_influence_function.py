@@ -1,17 +1,16 @@
-#!/usr/bin/env python3
-
-import torch
-import time
-import datetime
-import numpy as np
 import copy
+import datetime
 import logging
-
+import time
 from pathlib import Path
-from pytorch_influence_functions.influence_function import s_test, grad_z
-from pytorch_influence_functions.utils import save_json, display_progress
-
 from typing import Any
+
+import numpy as np
+import torch
+
+from pytorch_influence_functions.influence_function import grad_z, s_test
+from pytorch_influence_functions.utils import display_progress, save_json
+
 
 def calc_s_test(
         model: torch.nn.Module,
@@ -50,7 +49,7 @@ def calc_s_test(
             dataset. Can be huge.
         save: Path, path to the folder where the s_test files were saved to or
             False if they were not saved."""
-    
+
     # TODO: Disentangle the savepath and save options
     if save and not isinstance(save, Path):
         save = Path(save)
@@ -484,7 +483,7 @@ def calc_img_wise(
 
     Arguments:
         config: dict, contains the configuration from cli params"""
-    
+
     influences_meta: dict[str, Any] = copy.deepcopy(config)
 
     test_sample_num: int = config['test_sample_num']
