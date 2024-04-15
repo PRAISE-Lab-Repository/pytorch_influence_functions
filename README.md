@@ -72,11 +72,17 @@ Next install the package dependencies using `pip` and the provided `requirements
 pip install -r requirements.txt
 ```
 
-### Static Type Analysis
-In order to perform static type analysis with mypy, ensure that the mypy module is installed (use `pip install mypy` if unsure), and run the following command from the repository root:
+### Static Analysis using MyPy and Ruff
+In order to perform type checking with mypy, ensure that the mypy module is installed (use `pip install mypy` if unsure), and run the following command from the repository root:
 
 ```bash
 mypy pytorch_influence_functions
+```
+
+In order to perform static analysis with ruff, ensure that the ruff module is installed (use `pip install ruff` if unsure) and run the following command from the repository root:
+
+```bash
+ruff check
 ```
 
 ### Running Unit Tests

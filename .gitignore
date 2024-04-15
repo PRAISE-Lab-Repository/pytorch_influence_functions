@@ -14,3 +14,4 @@ pyvenv.cfg
 .vscode/
 .idea/
 .venv/
+.ruff_cache/
