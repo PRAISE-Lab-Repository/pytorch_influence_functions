@@ -43,8 +43,8 @@ jobs:
 
       # Gather Release Metadata
       - name: Retrieve build artefact filenames, filepaths, and set as env variable
-        working-directory: 'dist'
-        run: | 
+        working-directory: ${{ github.workspace }}/dist
+        run: |           
           # Source releases
           echo "src_name=$(ls *.tar.gz)" >> "$GITHUB_ENV"
           echo "src_path=$(realpath $(ls *.tar.gz))" >> "$GITHUB_ENV"
@@ -66,8 +66,8 @@ jobs:
 
           # Tag names follow the SemVer 2.0.0 convention:
           # <major>.<minor>.<patch>+<build>       
-          echo "tag_name=${{ env.package_version }}+${{ github.run_number }}" >> "$GITHUB_ENV"
-          echo "tag_name=${{ env.package_version }}+${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+          echo "tag_name=$(hatch version)+${{ github.run_number }}" >> "$GITHUB_ENV"
+          echo "tag_name=$(hatch version)+${{ github.run_number }}" >> "$GITHUB_OUTPUT"
           echo ${{ env.tag_name }}
 
       - name: Create Github release

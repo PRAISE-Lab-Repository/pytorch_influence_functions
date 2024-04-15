@@ -9,7 +9,7 @@ dependencies = [
     "ruff",
     "mypy",
     "mypy-extensions",
-    "nump",
+    "numpy",
     "torch",
     "typing_extensions",
 ]
