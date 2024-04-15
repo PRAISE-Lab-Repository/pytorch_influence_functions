@@ -21,20 +21,19 @@ jobs:
           python-version: '3.10' 
           cache: 'pip'
 
-      - name: Install dependencies with pip from requirements.txt
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+      - name: Install hatch, a python build and environment manager
+        run: pip install hatch
 
+      # For the script definitions, please see `pyproject.toml`
       - name: Run type checking with mypy
         continue-on-error: true
-        run: mypy pytorch_influence_functions
+        run: hatch run type-check
 
       - name: Run static analysis with ruff
         continue-on-error: true
-        run: ruff check
+        run: hatch run ruff-check
 
       - name: Run unit tests with unittest
         continue-on-error: true
-        run: python -m unittest -v
+        run: hatch run unit-tests
  

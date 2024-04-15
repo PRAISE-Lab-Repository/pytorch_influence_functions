@@ -42,10 +42,10 @@ git clone https://github.com/PRAISE-Lab-Repository/pytorch_influence_functions.g
 cd pytorch_influence_functions
 ```
 
-And then use setuptools to install the package so that it is available within your system:
+And then use pip to install the package so that it is available within your system:
 
 ```bash
-python setup.py install
+pip install .
 ```
 
 You may now use this module in your Python code or Jupyter notebooks by importing it via:
@@ -56,47 +56,42 @@ import python_influence_functions as ptif
 
 ## Development
 
-This Python library uses [mypy](https://www.mypy-lang.org/) for static type analysis, `unittest` for unit testing, setuptools for package building, as well as Github Actions to perform all three tasks automatically as a part of a CI/CD pipeline.
+This Python library uses [mypy](https://www.mypy-lang.org/) for type checking, ruff for static analysis, `unittest` for unit testing, hatch for environment management and package building, as well as Github Actions to perform all these tasks automatically as a part of a CI/CD pipeline.
 
-### Python Virtual Environment
-In order to maintain the same toolchain and simplify dependency management, please develop this package within a Python virtual environment. Create and activate the environment using:
+The easiest way to get started with development is to use Hatch for environment management. Ensure that hatch is available on your system (run `pip install hatch` if unsure), and then start a new environment using:
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
+hatch env create
 ```
 
-Next install the package dependencies using `pip` and the provided `requirements.txt`:
+Type checking using MyPy can be run via:
 
 ```bash
-pip install -r requirements.txt
+# Equivalent to:
+# mypy pytorch_influence_functions
+hatch run type-check
 ```
 
-### Static Analysis using MyPy and Ruff
-In order to perform type checking with mypy, ensure that the mypy module is installed (use `pip install mypy` if unsure), and run the following command from the repository root:
+Static analysis using Ruff can be run via:
 
 ```bash
-mypy pytorch_influence_functions
+# Equivalent to:
+# mypy ruff check
+hatch run ruff-check
 ```
 
-In order to perform static analysis with ruff, ensure that the ruff module is installed (use `pip install ruff` if unsure) and run the following command from the repository root:
+And finally unit tests can be run via:
 
 ```bash
-ruff check
+# Equivalent to
+# python -m unittest -v
+hatch run unit-tests
 ```
 
-### Running Unit Tests
-In order to run unit tests with `unittest`, run the following command from the repository root:
+In order to build the package using hatch, run:
 
 ```bash
-python -m unittest -v
-```
-
-### Building for Development
-When developing this module, call `setup.py` with the `develop` directive in order to perform a live installation that allows code to be "refreshed" upon saving. This prevents the need to run `python setup.py install` after every change in the module's code.
-
-```bash
-python setup.py develop
+hatch build
 ```
 
 ## Usage
