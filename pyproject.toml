@@ -3,7 +3,7 @@ name = "pytorch_influence_functions"
 description = "Pytorch implementation of influence functions. Influence Functions were introduced in the paper Understanding Black-box Predictions via Influence Functions by Pang Wei Koh and Percy Liang (ICML2017)"
 readme = "README.md"
 license = {file = "LICENSE"}
-version = "0.1.3"
+version = "0.1.4"
 requires-python = ">= 3.10"
 dependencies = [
     "ruff",
@@ -42,6 +42,11 @@ Changelog = "https://github.com/PRAISE-Lab-Repository/pytorch_influence_function
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+  "/.github",
+]
 
 [tool.hatch.envs.default.scripts]
 unit-tests = "python -m unittest -v"
